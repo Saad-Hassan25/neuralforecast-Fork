@@ -7,9 +7,13 @@ from os import cpu_count
 
 import pytorch_lightning as pl
 import torch
-from ray import air, tune
-from ray.tune.integration.pytorch_lightning import TuneReportCallback
-from ray.tune.search.basic_variant import BasicVariantGenerator
+try:
+    from ray import air, tune
+    from ray.tune.integration.pytorch_lightning import TuneReportCallback
+    from ray.tune.search.basic_variant import BasicVariantGenerator
+except ImportError:
+    air = tune = TuneReportCallback = BasicVariantGenerator = None
+ 
 
 
 class MockTrial:
@@ -73,7 +77,8 @@ class BaseAuto(pl.LightningModule):
         loss,
         valid_loss,
         config,
-        search_alg=BasicVariantGenerator(random_state=1),
+        # search_alg=BasicVariantGenerator(random_state=1),
+        search_alg=None,
         num_samples=10,
         time_budget=None,
         cpus=cpu_count(),
